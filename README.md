@@ -8,7 +8,6 @@ TripSync is a collaborative group itinerary planner where travelers share trips,
 - Owner-created trips with IANA timezones, date-range validation, private single-use invitations expiring after three days, and membership-based authorization.
 - Manual add/edit/delete activities, ordering, notes, optional URLs, member ownership and UTC-stored timestamps with explicit offsets.
 - WebSocket events for creates, updates, deletes, trip changes and API-initiated syncs. Clients reconnect and refetch authoritative state.
-- Atomic optimistic activity version checks: stale edits/deletes return HTTP 409; imported activities are read-only.
 - Owner-managed remote HTTPS `.ics` subscriptions, manual `.ics` imports, 30-minute scheduled sync for remote feeds, conditional requests (ETag / Last-Modified), all-or-nothing parse/upsert/delete, failure-safe preservation of existing data, and SyncRun logs.
 - Fictional Seattle demo with three travelers, six manual activities and two seeded **fixture** reservation items matching `demo/seattle.ics`. These fixtures are not remotely synchronized bookings.
 
