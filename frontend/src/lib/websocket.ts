@@ -14,3 +14,4 @@ export function watchTrip(id:number, changed:()=>void):()=>void{
   }
   connect()
   return ()=>{disposed=true;window.clearTimeout(handle);ws?.close()}
+}

@@ -2,6 +2,8 @@
 
 TripSync is a collaborative group itinerary planner where travelers share trips, invite members, and update activities with real-time browser notifications. It combines a React interface, FastAPI/PostgreSQL API, versioned activity editing, and a separate service that periodically synchronizes HTTPS iCalendar feeds, with a manual `.ics` import option.
 
+**Project provenance:** Initial implementation: October 2026. This repository was created from a functional specification; no pre-existing TripSync code or past implementation was provided for reuse. The functionality described here is newly authored in this session, not evidence that this exact source code existed earlier. No production deployments, scale tests, or historical commits are claimed.
+
 ## Features
 
 - Argon2 passwords, signed eight-hour HttpOnly SameSite=Lax session cookies, and CSRF header checks on authenticated mutations.
