@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: tripsync
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Configure POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: tripsync
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U tripsync -d tripsync']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+  backend:
+    build: ./backend
+    environment: &backend_env
+      DATABASE_URL: postgresql+psycopg://tripsync:${POSTGRES_PASSWORD}@db:5432/tripsync
+      SESSION_SECRET: ${SESSION_SECRET:?Configure SESSION_SECRET in .env}
+      APP_ORIGIN: http://localhost:5173
+      COOKIE_SECURE: 'false'
+    ports: ['8000:8000']
+    depends_on:
+      db: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+  scheduler:
+    build: ./backend
+    command: python -m app.scheduler
+    environment:
+      <<: *backend_env
+      SYNC_INTERVAL_MINUTES: ${SYNC_INTERVAL_MINUTES:-30}
+    depends_on:
+      db: {condition: service_healthy}
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+  frontend:
+    build: ./frontend
+    ports: ['5173:5173']
+    depends_on: [backend]
+volumes:
+  pgdata:
