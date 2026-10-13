@@ -1,0 +1,25 @@
+name: CI
+on:
+  push:
+  pull_request:
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install -r backend/requirements-dev.txt
+      - run: ruff check backend/app backend/tests
+      - run: python -m pytest backend/tests -q
+        env: {PYTHONPATH: backend, SESSION_SECRET: ci-development-secret-with-at-least-32-characters}
+      - run: cd backend && alembic upgrade head
+        env: {DATABASE_URL: 'sqlite:///./ci.db'}
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: cd frontend && npm install --no-audit --no-fund
+      - run: cd frontend && npm run typecheck && npm run build

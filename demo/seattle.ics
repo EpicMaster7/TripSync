@@ -1,0 +1,22 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TripSync//Fictional Demo Data//EN
+BEGIN:VEVENT
+UID:seattle-hotel-001@tripsync.example.test
+DTSTAMP:20261013T120000Z
+DTSTART:20261102T230000Z
+DTEND:20261102T233000Z
+SUMMARY:Hotel check-in
+LOCATION:Downtown Seattle
+DESCRIPTION:Demo reservation; no actual booking.
+END:VEVENT
+BEGIN:VEVENT
+UID:seattle-tour-002@tripsync.example.test
+DTSTAMP:20261013T120000Z
+DTSTART:20261103T180000Z
+DTEND:20261103T193000Z
+SUMMARY:Waterfront guided tour
+LOCATION:Seattle waterfront
+DESCRIPTION:Fictional reservation for demonstration purposes.
+END:VEVENT
+END:VCALENDAR

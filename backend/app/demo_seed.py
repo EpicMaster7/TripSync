@@ -3,7 +3,7 @@ import os
 from datetime import date,datetime,timezone
 from sqlalchemy import select
 from .db import SessionLocal
-from .models import User,Trip,TripMember,ItineraryItem
+from .models import User,Trip,TripMember,ItineraryItem,CalendarSubscription
 from .auth import hash_password
 
 TRAVELERS=[('Alex Rivera','alex@tripsync.example.test'),('Morgan Chen','morgan@tripsync.example.test'),('Jamie Lee','jamie@tripsync.example.test')]
@@ -37,9 +37,12 @@ def main():
             for idx,user in enumerate(users): db.add(TripMember(trip_id=trip.id,user_id=user.id,role='owner' if idx==0 else 'member'))
             for position,(title,start,end,location,notes) in enumerate(ACTIVITIES):
                 db.add(ItineraryItem(trip_id=trip.id,title=title,starts_at=datetime.fromisoformat(start.replace('Z','+00:00')),ends_at=datetime.fromisoformat(end.replace('Z','+00:00')),location=location,notes=notes,position=position,created_by_id=users[position%3].id,owner_id=users[position%3].id,source='manual'))
+            fixture=CalendarSubscription(trip_id=trip.id,owner_id=users[0].id,url='manual://manual-upload',status='healthy')
+            db.add(fixture);db.flush()
             for uid,title,start,end,location in RESERVATIONS:
                 # Fixture records reflect demo/seattle.ics; no remote calendar is fetched.
-                db.add(ItineraryItem(trip_id=trip.id,title=title,starts_at=datetime.fromisoformat(start.replace('Z','+00:00')),ends_at=datetime.fromisoformat(end.replace('Z','+00:00')),location=location,source='ics',external_uid=uid))
+                # Re-upload under 'manual-upload' to exercise idempotent merging.
+                db.add(ItineraryItem(trip_id=trip.id,subscription_id=fixture.id,title=title,starts_at=datetime.fromisoformat(start.replace('Z','+00:00')),ends_at=datetime.fromisoformat(end.replace('Z','+00:00')),location=location,source='ics',external_uid=uid))
             db.commit()
         print(f'Seeded fictional trip {trip.id} for {", ".join(u.email for u in users)}')
 
